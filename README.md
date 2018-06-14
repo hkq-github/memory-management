@@ -41,7 +41,7 @@
 
 ### 功能实现（OS类）：
 
-* 创建进程：**createProcess(String id, int[] segments)** 
+* **创建进程：createProcess(String id, int[] segments)** 
 
   检验创建进程的合法性（进程名是否重复、段的个数、每个段大小是否合法）
   
@@ -52,7 +52,7 @@
   调用**initLoad()** 初始载入一些页
   
   ![img](https://github.com/hkq-github/MemoryManagement/blob/edittest/imgs/8.png)
-* 将逻辑地址映射为物理地址：**toPhysicalAddress()**
+* **将逻辑地址映射为物理地址：toPhysicalAddress()**
 
   检验（进程、段是否存在；访问地址是否越界）
   
@@ -63,6 +63,6 @@
   计算物理地址，重置该页使用时间
   
   ![img](https://github.com/hkq-github/MemoryManagement/blob/edittest/imgs/9.png)
-* 销毁进程：**destroyProcess(String id)** 
-* 查看进程：**showProcess(String id)** 
-* 查看内存：**showMemory()** 
+* **销毁进程：destroyProcess(String id)** 
+* **查看进程：showProcess(String id)** 
+* **查看内存：showMemory()** 

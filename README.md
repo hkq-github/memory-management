@@ -24,27 +24,27 @@
   由于是模拟，内存可以看作是Frame页框的数组。提供了两个方法：
 * 申请内存：**mallocFrame(String id, int n)** 返回申请到的页框的页框号数组。根据放置策略（优先选择低页框），从数组下标0处遍历数组，选择没有被占用的页框。
 
-  ![img](https://github.com/hkq-github/MemoryManagement/blob/edittest/imgs/1.png)
+  ![img](https://github.com/hkq-github/MemoryManagement/blob/master/imgs/1.png)
 * 释放内存：**freeFrame(int[] frames)** 释放frames数组中页框号的内存。
 ###### PCB类：
 * **initLoad()** 函数中体现了初始载入策略（从第0个、第1个段...依次载入页，直到驻留集已全部载入）。
 
-  ![img](https://github.com/hkq-github/MemoryManagement/blob/edittest/imgs/2.png)
+  ![img](https://github.com/hkq-github/MemoryManagement/blob/master/imgs/2.png)
 * 当发生缺页中断后，需要根据置换策略（FIFO or LRU）选择一个页换出内存，并将另一个页载入。**replacePage(int inSN, intinPN)** 代码如下：
 
-  ![img](https://github.com/hkq-github/MemoryManagement/blob/edittest/imgs/3.png)
+  ![img](https://github.com/hkq-github/MemoryManagement/blob/master/imgs/3.png)
 * FIFO的实现**selectReplacePage_FIFO()：** 
   在PCB类中维护一个队列，记录进程中页（段号、页号）的载入顺序，每当页载入内存时入队；要将页换出时，返回队头元素。
   
-  ![img](https://github.com/hkq-github/MemoryManagement/blob/edittest/imgs/4.png)
+  ![img](https://github.com/hkq-github/MemoryManagement/blob/master/imgs/4.png)
   
-  ![img](https://github.com/hkq-github/MemoryManagement/blob/edittest/imgs/5.png)
+  ![img](https://github.com/hkq-github/MemoryManagement/blob/master/imgs/5.png)
 * LRU的实现**selectReplacePage_LRU()：** 
   在PageEntry页表项类中有usedTime变量，记录该页上一次被访问的时间。当该页被初始载入或被访问时，重置时间；要将页换出时，遍历进程所有页，选出usedTime最小的页，返回段号、页号。
   
-  ![img](https://github.com/hkq-github/MemoryManagement/blob/edittest/imgs/6.png)
+  ![img](https://github.com/hkq-github/MemoryManagement/blob/master/imgs/6.png)
   
-  ![img](https://github.com/hkq-github/MemoryManagement/blob/edittest/imgs/7.png)
+  ![img](https://github.com/hkq-github/MemoryManagement/blob/master/imgs/7.png)
 
 ### 功能实现（OS类）：
 
@@ -58,7 +58,7 @@
   
   调用**initLoad()** 初始载入一些页
   
-  ![img](https://github.com/hkq-github/MemoryManagement/blob/edittest/imgs/8.png)
+  ![img](https://github.com/hkq-github/MemoryManagement/blob/master/imgs/8.png)
   
 * **将逻辑地址映射为物理地址：toPhysicalAddress()**
 
@@ -70,7 +70,7 @@
   
   计算物理地址，重置该页使用时间
   
-  ![img](https://github.com/hkq-github/MemoryManagement/blob/edittest/imgs/9.png)
+  ![img](https://github.com/hkq-github/MemoryManagement/blob/master/imgs/9.png)
   
 * **销毁进程：destroyProcess(String id)** 
 * **查看进程：showProcess(String id)** 

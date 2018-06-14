@@ -23,7 +23,7 @@
 ###### Memory内存模拟类：
   由于是模拟，内存可以看作是Frame页框的数组。提供了两个方法：
 * 申请内存：**mallocFrame(String id, int n)** 返回申请到的页框的页框号数组。根据放置策略（优先选择低页框），从数组下标0处遍历数组，选择没有被占用的页框。
-  ![img](file:///C:\Users\ADMINI~1.凯\AppData\Local\Temp\msohtmlclip1\01\clip_image002.jpg)
+  ![img](https://github.com/hkq-github/MemoryManagement/blob/edittest/imgs/1.png)
 * 释放内存：**freeFrame(int[] frames)**释放frames数组中页框号的内存。
 ###### PCB类：
 * **initLoad()** 函数中体现了初始载入策略（从第0个、第1个段...依次载入页，直到驻留集已全部载入）。

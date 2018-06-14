@@ -42,16 +42,26 @@
 ### 功能实现（OS类）：
 
 * 创建进程：**createProcess(String id, int[] segments)** 
+
   检验创建进程的合法性（进程名是否重复、段的个数、每个段大小是否合法）
+  
   创建PCB对象
+  
   调用**mallocFrame(String id, intn)** 申请内存。若内存不足，提示创建失败，返回
+  
   调用**initLoad()** 初始载入一些页
+  
   ![img](file:///C:\Users\ADMINI~1.凯\AppData\Local\Temp\msohtmlclip1\01\clip_image016.jpg)
 * 将逻辑地址映射为物理地址：**toPhysicalAddress()**
+
   检验（进程、段是否存在；访问地址是否越界）
+  
   根据段偏移计算页号、页偏移
+  
   判断访问的页是否存在，不存在调用**replacePage(int inSN, intinPN)** ，选择一页换出内存，并将请求的页载入
+  
   计算物理地址，重置该页使用时间
+  
   ![img](file:///C:\Users\ADMINI~1.凯\AppData\Local\Temp\msohtmlclip1\01\clip_image018.jpg)
 * 销毁进程：**destroyProcess(String id)** 
 * 查看进程：**showProcess(String id)** 

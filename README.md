@@ -216,7 +216,7 @@ private Integer[] selectReplacePage_LRU() {
 ```
 
 #### 功能实现（OS类）：
-##### * 创建进程：`boolean createProcess(String id, int[] segments)`
+##### 创建进程：`boolean createProcess(String id, int[] segments)`
 
   检验创建进程的合法性（进程名是否重复、段的个数、每个段大小是否合法）
   
@@ -254,7 +254,7 @@ public boolean createProcess(String id, int[] segments) {
 }
 ```
   
-##### * 将逻辑地址映射为物理地址：`int toPhysicalAddress(String id, int segmentNum, int segmentOffset)`
+##### 将逻辑地址映射为物理地址：`int toPhysicalAddress(String id, int segmentNum, int segmentOffset)`
 
   检验（进程、段是否存在；访问地址是否越界）
   
@@ -307,6 +307,6 @@ public int toPhysicalAddress(String id, int segmentNum, int segmentOffset) {
 }
 ```
   
-##### * 销毁进程：`void destroyProcess(String id)`
-##### * 查看进程：`void showMemory()`
-##### * 查看内存：`void showMemory()`
+##### 销毁进程：`void destroyProcess(String id)`
+##### 查看进程：`void showMemory()`
+##### 查看内存：`void showMemory()`

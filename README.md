@@ -29,8 +29,8 @@
 * 申请(设置used为true)前n个未使用的页框，返回包含页框号的数组；若剩余内存不够，返回null
 */
 public int[] mallocFrame(String id, int n) {
-	if(unusedFrameCount < n) {
-		return null;
+    if(unusedFrameCount < n) {
+        return null;
 	}
 		
 	int[] result = new int[n];

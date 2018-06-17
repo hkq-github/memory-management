@@ -9,6 +9,7 @@
   * [Memory内存模拟类](#memory内存模拟类)
   * [PCB类](#pcb类)
   * [功能实现OS类](#功能实现os类)
+* [如何运行](#如何运行)
 
 ## 题目描述：
 * 内存大小64K，页框大小为1K，一个进程最多有4个段，且每个段最大为16K。一个进程驻留集最多为8页。
@@ -318,3 +319,6 @@ public int toPhysicalAddress(String id, int segmentNum, int segmentOffset) {
 ##### 销毁进程：`void destroyProcess(String id)`
 ##### 查看进程：`void showMemory()`
 ##### 查看内存：`void showMemory()`
+
+## 如何运行
+下载该项目，在eclipse下依次选择`File -> Import -> General -> Existing Projects into Workspace`选择MemoryManagement项目导入，在`Shell类`运行，按照提示操作即可。

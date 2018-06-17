@@ -127,11 +127,11 @@ private Integer[] selectReplacePage_LRU() {
     
     // 遍历所有页，找到usedTime最小的
     for(SegmentEntry segment : STable) {
-    	for(PageEntry page : segment.PTable) {
+        for(PageEntry page : segment.PTable) {
             if(page.load && page.usedTime < leastTime) {
-        	    leastTime = page.usedTime;
-        	    segmentNum = segment.segmentNum;
-        	    pageNum = page.pageNum;
+                leastTime = page.usedTime;
+                segmentNum = segment.segmentNum;
+                pageNum = page.pageNum;
             }
         }
     }

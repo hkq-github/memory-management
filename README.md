@@ -7,7 +7,7 @@
 * 驻留集置换策略：局部策略（仅在进程的驻留集中选择一页）
 * 页面淘汰策略：FIFO、LRU
 
-## 要实现的功能
+**要实现的功能**
 1. 创建进程：输入进程名、每个段大小
 2. 销毁进程：回收该进程占有的内存
 3. 查看一个进程当前的驻留集、页面淘汰策略（FIFO or LRU）、段表、页表
@@ -90,12 +90,12 @@ IO: 将进程 P4 段(2) 页(3) 读入页框 0 中
 ```
 ## 详细设计
 
-## 一些策略：
+### 一些策略：
 * 放置策略：决定一个进程驻留集存放在内存什么地方。优先存放在低页框。当一个进程进入时，从低页框选择未使用的页框。
 * 初始载入策略：创建进程后，决定最开始将那些页载入内存，从第0个、第1个段...依次载入页，直到驻留集已全部载入
 
-## 一些类的说明：
-### Memory内存模拟类：
+### 一些类的说明：
+#### Memory内存模拟类：
 由于是模拟，内存可以看作是Frame页框的数组。提供了两个方法：
 * 申请内存：`int[] mallocFrame(String id, int n)` 返回申请到的页框的页框号数组。根据放置策略（优先选择低页框），从数组下标0处遍历数组，选择没有被占用的页框。
 ```java
@@ -123,7 +123,7 @@ public int[] mallocFrame(String id, int n) {
 ```
 * 释放内存：`void freeFrame(int[] frames)` 释放frames数组中页框号的内存。
 
-### PCB类：
+#### PCB类：
 * `void initLoad()` 函数中体现了初始载入策略（从第0个、第1个段...依次载入页，直到驻留集已全部载入）。
 ```java
 /**
@@ -214,9 +214,9 @@ private Integer[] selectReplacePage_LRU() {
     return new Integer[] {segmentNum, pageNum};
 }
 ```
-### 功能实现（OS类）：
 
-* **创建进程：** `boolean createProcess(String id, int[] segments)`
+#### 功能实现（OS类）：
+**创建进程：** `boolean createProcess(String id, int[] segments)`
 
   检验创建进程的合法性（进程名是否重复、段的个数、每个段大小是否合法）
   
@@ -254,7 +254,7 @@ public boolean createProcess(String id, int[] segments) {
 }
 ```
   
-* **将逻辑地址映射为物理地址：** `int toPhysicalAddress(String id, int segmentNum, int segmentOffset)`
+**将逻辑地址映射为物理地址：** `int toPhysicalAddress(String id, int segmentNum, int segmentOffset)`
 
   检验（进程、段是否存在；访问地址是否越界）
   
@@ -307,6 +307,6 @@ public int toPhysicalAddress(String id, int segmentNum, int segmentOffset) {
 }
 ```
   
-* **销毁进程：** `void destroyProcess(String id)`
-* **查看进程：** `void showMemory()`
-* **查看内存：** `void showMemory()`
+**销毁进程：** `void destroyProcess(String id)`
+**查看进程：** `void showMemory()`
+**查看内存：** `void showMemory()`

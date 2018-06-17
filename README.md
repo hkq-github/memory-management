@@ -25,36 +25,79 @@
 * 申请内存：`int[] mallocFrame(String id, int n)` 返回申请到的页框的页框号数组。根据放置策略（优先选择低页框），从数组下标0处遍历数组，选择没有被占用的页框。
 ```java
 /**
-	 * 放置策略：优先放在低页框
-	 * 申请(设置used为true)前n个未使用的页框，返回包含页框号的数组；若剩余内存不够，返回null
-	 */
-	public int[] mallocFrame(String id, int n) {
-		if(unusedFrameCount < n) {
-			return null;
-		}
-		
-		int[] result = new int[n];
-		int index = 0;
-		for(int i = 0; index < n && i < memory.length; i++) {
-			if(memory[i].used == false) {
-				result[index] = memory[i].frameNum;
-				memory[i].setUsed(id);
-				index++;
-			}
-		}
-		unusedFrameCount -= n;
-		return result;
+* 放置策略：优先放在低页框
+* 申请(设置used为true)前n个未使用的页框，返回包含页框号的数组；若剩余内存不够，返回null
+*/
+public int[] mallocFrame(String id, int n) {
+	if(unusedFrameCount < n) {
+		return null;
 	}
+		
+	int[] result = new int[n];
+	int index = 0;
+	for(int i = 0; index < n && i < memory.length; i++) {
+		if(memory[i].used == false) {
+			result[index] = memory[i].frameNum;
+			memory[i].setUsed(id);
+			index++;
+		}
+	}
+	unusedFrameCount -= n;
+	return result;
+}
 ```
-  ![img](https://github.com/hkq-github/MemoryManagement/blob/master/imgs/1.png)
-* 释放内存：**freeFrame(int[] frames)** 释放frames数组中页框号的内存。
+
+* 释放内存：`void freeFrame(int[] frames)` 释放frames数组中页框号的内存。
 ###### PCB类：
-* **initLoad()** 函数中体现了初始载入策略（从第0个、第1个段...依次载入页，直到驻留集已全部载入）。
-
-  ![img](https://github.com/hkq-github/MemoryManagement/blob/master/imgs/2.png)
-* 当发生缺页中断后，需要根据置换策略（FIFO or LRU）选择一个页换出内存，并将另一个页载入。**replacePage(int inSN, intinPN)** 代码如下：
-
-  ![img](https://github.com/hkq-github/MemoryManagement/blob/master/imgs/3.png)
+* `void initLoad()` 函数中体现了初始载入策略（从第0个、第1个段...依次载入页，直到驻留集已全部载入）。
+```java
+/**
+* 创建进程完成后，载入一些页。若该程序可以全部放入驻留集中，则将全部程序载入
+ * 初始载入策略：从第0个、第1个段...依次载入页，直到驻留集已全部载入
+*/
+public void initLoad() {
+ 	int index = 0;
+	for(SegmentEntry segment : STable) {
+		for(PageEntry page : segment.PTable) {
+			if(index >= residentSetCount) {
+				break;
+			}
+			page.setLoad(residentSet[index]);
+			loadQueue.add(new Integer[]{segment.segmentNum, page.pageNum});
+			memory.readPage(id, segment.segmentNum, page.pageNum, residentSet[index]);
+			index++;
+		}
+	}
+}
+```
+* 当发生缺页中断后，需要根据置换策略（FIFO or LRU）选择一个页换出内存，并将另一个页载入。`void replacePage(int inSN, int inPN)` 代码如下：
+```java
+/**
+* 依据policy策略选择一页换出驻留集，并将segmentNum段pagNum页换入
+* SN SegmentNum
+* PN PageNum
+*/
+public void replacePage(int inSN, int inPN) {
+	Integer[] something;
+	if(policy == OS.REPLACE_POLICY.FIFO) {
+		something = selectReplacePage_FIFO();
+	} else {
+		something = selectReplacePage_LRU();
+	}
+		
+	int outSN = something[0];
+	int outPN = something[1];
+		
+	PageEntry inPage = STable[inSN].PTable[inPN];
+	PageEntry outPage = STable[outSN].PTable[outPN];
+	int frameNum = outPage.frameNum;
+	memory.writePage(id, outSN, outPN, frameNum);
+	outPage.setUnload();
+	memory.readPage(id, inSN, inPN, frameNum);
+	inPage.setLoad(frameNum);
+	loadQueue.add(new Integer[]{inSN, inPN});
+}
+```
 * FIFO的实现**selectReplacePage_FIFO()：** 
   在PCB类中维护一个队列，记录进程中页（段号、页号）的载入顺序，每当页载入内存时入队；要将页换出时，返回队头元素。
   

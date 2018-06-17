@@ -62,13 +62,13 @@ private Integer[] selectReplacePage_FIFO() {
 
 * **创建进程：** `boolean createProcess(String id, int[] segments)`
 
-检验创建进程的合法性（进程名是否重复、段的个数、每个段大小是否合法）
+  检验创建进程的合法性（进程名是否重复、段的个数、每个段大小是否合法）
   
-创建PCB对象
+  创建PCB对象
   
-调用`mallocFrame(String id, intn)`申请内存。若内存不足，提示创建失败，返回
+  调用`mallocFrame(String id, intn)`申请内存。若内存不足，提示创建失败，返回
   
-调用`initLoad()`初始载入一些页
+  调用`initLoad()`初始载入一些页
   
 ```java
 

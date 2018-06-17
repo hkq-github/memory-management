@@ -21,122 +21,72 @@
 * 初始载入策略：创建进程后，决定最开始将那些页载入内存，从第0个、第1个段...依次载入页，直到驻留集已全部载入
 #### 一些类的说明：
 ###### Memory内存模拟类：
-  由于是模拟，内存可以看作是Frame页框的数组。提供了两个方法：
+由于是模拟，内存可以看作是Frame页框的数组。提供了两个方法：
 * 申请内存：`int[] mallocFrame(String id, int n)` 返回申请到的页框的页框号数组。根据放置策略（优先选择低页框），从数组下标0处遍历数组，选择没有被占用的页框。
 ```java
-/**
-* 放置策略：优先放在低页框
-* 申请(设置used为true)前n个未使用的页框，返回包含页框号的数组；若剩余内存不够，返回null
-*/
-public int[] mallocFrame(String id, int n) {
-    if(unusedFrameCount < n) {
-        return null;
-	}
-		
-	int[] result = new int[n];
-	int index = 0;
-	for(int i = 0; index < n && i < memory.length; i++) {
-		if(memory[i].used == false) {
-			result[index] = memory[i].frameNum;
-			memory[i].setUsed(id);
-			index++;
-		}
-	}
-	unusedFrameCount -= n;
-	return result;
-}
+
 ```
 
 * 释放内存：`void freeFrame(int[] frames)` 释放frames数组中页框号的内存。
 ###### PCB类：
 * `void initLoad()` 函数中体现了初始载入策略（从第0个、第1个段...依次载入页，直到驻留集已全部载入）。
 ```java
-/**
-* 创建进程完成后，载入一些页。若该程序可以全部放入驻留集中，则将全部程序载入
- * 初始载入策略：从第0个、第1个段...依次载入页，直到驻留集已全部载入
-*/
-public void initLoad() {
- 	int index = 0;
-	for(SegmentEntry segment : STable) {
-		for(PageEntry page : segment.PTable) {
-			if(index >= residentSetCount) {
-				break;
-			}
-			page.setLoad(residentSet[index]);
-			loadQueue.add(new Integer[]{segment.segmentNum, page.pageNum});
-			memory.readPage(id, segment.segmentNum, page.pageNum, residentSet[index]);
-			index++;
-		}
-	}
-}
+
 ```
 * 当发生缺页中断后，需要根据置换策略（FIFO or LRU）选择一个页换出内存，并将另一个页载入。`void replacePage(int inSN, int inPN)` 代码如下：
 ```java
+
+```
+* FIFO的实现`Integer[] selectReplacePage_FIFO()` 
+在PCB类中维护一个队列，记录进程中页（段号、页号）的载入顺序，每当页载入内存时入队；要将页换出时，返回队头元素。
+```java
+// 页载入内存的顺序。其中Integer数组元素分别为段号、页号
+// 用于实现替换策略的 FIFO
+// 重要：每当页载入内存时更新队列
+public Queue<Integer[]> loadQueue = new LinkedList<>();	
+```
+```java
 /**
-* 依据policy策略选择一页换出驻留集，并将segmentNum段pagNum页换入
-* SN SegmentNum
-* PN PageNum
-*/
-public void replacePage(int inSN, int inPN) {
-	Integer[] something;
-	if(policy == OS.REPLACE_POLICY.FIFO) {
-		something = selectReplacePage_FIFO();
-	} else {
-		something = selectReplacePage_LRU();
-	}
-		
-	int outSN = something[0];
-	int outPN = something[1];
-		
-	PageEntry inPage = STable[inSN].PTable[inPN];
-	PageEntry outPage = STable[outSN].PTable[outPN];
-	int frameNum = outPage.frameNum;
-	memory.writePage(id, outSN, outPN, frameNum);
-	outPage.setUnload();
-	memory.readPage(id, inSN, inPN, frameNum);
-	inPage.setLoad(frameNum);
-	loadQueue.add(new Integer[]{inSN, inPN});
+ * 根据FIFO策略选择一个页，依次返回该页的段号、页号
+ */
+private Integer[] selectReplacePage_FIFO() {
+    return loadQueue.poll();
 }
 ```
-* FIFO的实现**selectReplacePage_FIFO()：** 
-  在PCB类中维护一个队列，记录进程中页（段号、页号）的载入顺序，每当页载入内存时入队；要将页换出时，返回队头元素。
-  
-  ![img](https://github.com/hkq-github/MemoryManagement/blob/master/imgs/4.png)
-  
-  ![img](https://github.com/hkq-github/MemoryManagement/blob/master/imgs/5.png)
-* LRU的实现**selectReplacePage_LRU()：** 
-  在PageEntry页表项类中有usedTime变量，记录该页上一次被访问的时间。当该页被初始载入或被访问时，重置时间；要将页换出时，遍历进程所有页，选出usedTime最小的页，返回段号、页号。
-  
-  ![img](https://github.com/hkq-github/MemoryManagement/blob/master/imgs/6.png)
-  
-  ![img](https://github.com/hkq-github/MemoryManagement/blob/master/imgs/7.png)
+* LRU的实现`Integer[] selectReplacePage_LRU()`
+在PageEntry页表项类中有`usedTime`变量，记录该页上一次被访问的时间。当该页被初始载入或被访问时，重置时间；要将页换出时，遍历进程所有页，选出usedTime最小的页，返回段号、页号。
+```java
 
+```
 ### 功能实现（OS类）：
 
-* **创建进程：createProcess(String id, int[] segments)** 
+* **创建进程：** `boolean createProcess(String id, int[] segments)`
 
-  检验创建进程的合法性（进程名是否重复、段的个数、每个段大小是否合法）
+检验创建进程的合法性（进程名是否重复、段的个数、每个段大小是否合法）
   
-  创建PCB对象
+创建PCB对象
   
-  调用**mallocFrame(String id, intn)** 申请内存。若内存不足，提示创建失败，返回
+调用`mallocFrame(String id, intn)`申请内存。若内存不足，提示创建失败，返回
   
-  调用**initLoad()** 初始载入一些页
+调用`initLoad()`初始载入一些页
   
-  ![img](https://github.com/hkq-github/MemoryManagement/blob/master/imgs/8.png)
-  
-* **将逻辑地址映射为物理地址：toPhysicalAddress()**
+```java
 
-  检验（进程、段是否存在；访问地址是否越界）
+```
   
-  根据段偏移计算页号、页偏移
+* **将逻辑地址映射为物理地址：** `int toPhysicalAddress(String id, int segmentNum, int segmentOffset)`
+
+检验（进程、段是否存在；访问地址是否越界）
   
-  判断访问的页是否存在，不存在调用**replacePage(int inSN, intinPN)** ，选择一页换出内存，并将请求的页载入
+根据段偏移计算页号、页偏移
   
-  计算物理地址，重置该页使用时间
+判断访问的页是否存在，不存在调用`replacePage(int inSN, intinPN)` ，选择一页换出内存，并将请求的页载入
   
-  ![img](https://github.com/hkq-github/MemoryManagement/blob/master/imgs/9.png)
+计算物理地址，重置该页使用时间
+```java
+
+```
   
-* **销毁进程：destroyProcess(String id)** 
-* **查看进程：showProcess(String id)** 
-* **查看内存：showMemory()** 
+* **销毁进程：** `void destroyProcess(String id)`
+* **查看进程：** `void showMemory()`
+* **查看内存：** `void showMemory()`

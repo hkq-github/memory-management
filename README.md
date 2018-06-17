@@ -22,8 +22,30 @@
 #### 一些类的说明：
 ###### Memory内存模拟类：
   由于是模拟，内存可以看作是Frame页框的数组。提供了两个方法：
-* 申请内存：**mallocFrame(String id, int n)** 返回申请到的页框的页框号数组。根据放置策略（优先选择低页框），从数组下标0处遍历数组，选择没有被占用的页框。
-
+* 申请内存：`int[] mallocFrame(String id, int n)` 返回申请到的页框的页框号数组。根据放置策略（优先选择低页框），从数组下标0处遍历数组，选择没有被占用的页框。
+```java
+/**
+	 * 放置策略：优先放在低页框
+	 * 申请(设置used为true)前n个未使用的页框，返回包含页框号的数组；若剩余内存不够，返回null
+	 */
+	public int[] mallocFrame(String id, int n) {
+		if(unusedFrameCount < n) {
+			return null;
+		}
+		
+		int[] result = new int[n];
+		int index = 0;
+		for(int i = 0; index < n && i < memory.length; i++) {
+			if(memory[i].used == false) {
+				result[index] = memory[i].frameNum;
+				memory[i].setUsed(id);
+				index++;
+			}
+		}
+		unusedFrameCount -= n;
+		return result;
+	}
+```
   ![img](https://github.com/hkq-github/MemoryManagement/blob/master/imgs/1.png)
 * 释放内存：**freeFrame(int[] frames)** 释放frames数组中页框号的内存。
 ###### PCB类：

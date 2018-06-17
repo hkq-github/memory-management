@@ -321,4 +321,4 @@ public int toPhysicalAddress(String id, int segmentNum, int segmentOffset) {
 ##### 查看内存：`void showMemory()`
 
 ## 如何运行
-下载该项目，在eclipse下依次选择`File -> Import -> General -> Existing Projects into Workspace`选择MemoryManagement项目导入，在`Shell类`运行，按照提示操作即可。
+下载该项目，在eclipse下依次选择`File -> Import -> General -> Existing Projects into Workspace`选择`MemoryManagement`项目导入，在`Shell类`运行，按照提示操作即可。
